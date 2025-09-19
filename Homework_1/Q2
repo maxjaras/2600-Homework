@@ -1,0 +1,90 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+#step C
+Hitters = pd.read_csv('Data/Hitters.csv')
+number_data = Hitters.select_dtypes(include='number')
+median = number_data.median()
+# print(median)
+
+#step D
+tot_hits = Hitters['Hits'].sum()
+tot_walks = Hitters['Walks'].sum()
+tot_atbats = Hitters['AtBat'].sum()
+
+neither = tot_atbats - (tot_hits + tot_walks)
+
+labels = ['Hits', 'Walks', 'Neither']
+sizes = [tot_hits, tot_walks, neither]
+
+# fig, ax = plt.subplots()
+# ax.pie(sizes, labels=labels, radius = 1, center = (0,4))
+
+# ax.legend(labels, loc = 'right')
+# plt.show()
+
+#step E
+no_salary = Hitters['Salary'].isnull().sum()
+# print(no_salary)
+
+#step F
+salaried = Hitters[Hitters['Salary'].notnull()]
+# histogram = plt.hist(salaried['Salary'], bins = 30)
+# plt.title('Histogram of Salaries')
+# plt.xlabel('Salary in $1000s')
+# plt.ylabel('Number of Players')
+# plt.show()
+
+#step G
+salary = Hitters['Salary'].dropna()
+career_stats = ["CAtBat","CHits","CHmRun","CRuns","CRBI","CWalks"]
+# colors = ['blue', 'green', 'red', 'purple', 'orange', 'brown']
+
+# for metric, color in zip(career_stats, colors):
+    # plt.scatter(Hitters[metric], Hitters['Salary'], color=color)
+    # plt.xlabel(metric)
+    # plt.ylabel('Salary in $1000s')
+    # plt.show()
+
+#step H
+National_League = Hitters[Hitters['League'] == 'N']
+American_League = Hitters[Hitters['League'] == 'A']
+
+NL_West_Salary_mean = National_League[National_League['Division'] == 'W']['Salary'].dropna().mean()
+NL_East_Salary_mean = National_League[National_League['Division'] == 'E']['Salary'].dropna().mean()
+AL_West_Salary_mean = American_League[American_League['Division'] == 'W']['Salary'].dropna().mean()
+AL_East_Salary_mean = American_League[American_League['Division'] == 'E']['Salary'].dropna().mean()
+
+print(NL_West_Salary_mean)
+print(NL_East_Salary_mean)
+print(AL_West_Salary_mean)
+print(AL_East_Salary_mean)
+
+#step I
+vets = Hitters[Hitters['Years'] > 12]
+youngs = Hitters[Hitters['Years'] < 5]
+
+vets_salary = vets['Salary'].dropna()
+youngs_salary = youngs['Salary'].dropna()
+
+# plt.boxplot([youngs_salary, vets_salary], vert=True, patch_artist=True)
+# plt.xticks([1, 2], ['Young Players (<5 years)', 'Veterans (>12 years)'])
+# plt.title('12 Year Veterans vs <5 Year Players Salary Comparison')
+# plt.ylabel('Salary in $1000s')
+# plt.show()
+
+#step J
+batting_avg = Hitters['CHits'] / Hitters['CAtBat']
+best_batter = Hitters.loc[batting_avg.idxmax()]
+row = batting_avg.idxmax()
+# print(row)
+# print(best_batter['League'])
+# print(best_batter['Division'])
+# print(best_batter['Salary'])
+# print(round(batting_avg.max(), 3))
+
+#step K
+Hitters['Career_BA'] = batting_avg
+top5_BA = Hitters.nlargest(5, 'Career_BA')
+# print(top5_BA[['HmRun', 'RBI', 'Salary', 'CHits', 'CAtBat', 'CHmRun']])
+# print(round(top5_BA['Career_BA'], 3))
