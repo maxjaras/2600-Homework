@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+from sympy import summation
+
+
+Bikeshare_hours = pd.read_csv('Data/Bikeshare/hour.csv')
+
+## Correlation matrix for all numeric data ##
+
+#Bikeshare_hours['hr'] = pd.to_numeric(Bikeshare_hours['hr'], errors='coerce')
+#numbers_only = Bikeshare_hours.select_dtypes(include=['number'])
+#matrix = numbers_only.corr()
+#print(matrix)
+
+
+## a scatter plot comparing hours to biker count ##
+
+#plt.scatter(Bikeshare_hours['hr'], Bikeshare_hours['cnt'], alpha=0.3)
+#plt.xlabel('Hour of the Day')
+#plt.ylabel('Biker Count')
+#plt.show()
+
+
+## multiple linear regression, hr, hr^2 and intercept as predictors & MSE ##
+
+Bikeshare_hours['hr2'] = Bikeshare_hours['hr'] ** 2
+
+Bikeshare_hours['hr_n_work'] = Bikeshare_hours['hr'] * Bikeshare_hours['workingday']
+
+x = Bikeshare_hours[['hr', 'hr2', 'workingday', 'hr_n_work', 'temp']]
+y = Bikeshare_hours['cnt']
+x = sm.add_constant(x)
+
+model = sm.OLS(y,x).fit()
+print(model.summary())
+
+def mse(y, y_pred):
+    residual = y - y_pred
+    squared = residual ** 2
+    SSR = sum(squared)
+    MSE = SSR / y.shape[0]
+    return MSE
+
+print(mse(y, model.predict(x)))
